@@ -1,0 +1,1337 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>サボロー — UIモックアップ</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream-50:#FFFBF1;
+    --cream-100:#FFF5DD;
+    --cream-200:#FFE9B8;
+    --yellow-300:#FFD86E;
+    --yellow-400:#F8C948;
+    --orange-500:#FF7A3D;
+    --orange-600:#F2671F;
+    --ink-900:#3F2E1B;
+    --ink-700:#6B5034;
+    --ink-500:#9C8362;
+    --line:#F0E4C8;
+    --green-500:#3FB67E;
+    --pink-300:#FFB7B0;
+    --blue-300:#A8C8FF;
+  }
+  html,body{ background:#FBE9B7; }
+  body{
+    font-family:"M PLUS Rounded 1c","Zen Maru Gothic","Hiragino Maru Gothic ProN",system-ui,-apple-system,sans-serif;
+    color:var(--ink-900);
+    background-image:
+      radial-gradient(circle at 20% 10%, #FFF6D5 0, transparent 35%),
+      radial-gradient(circle at 80% 30%, #FFE7AE 0, transparent 38%),
+      radial-gradient(circle at 50% 90%, #FFF1C2 0, transparent 40%),
+      linear-gradient(180deg, #FBE9B7 0%, #F8DD94 100%);
+    background-attachment: fixed;
+  }
+
+  /* iPhone-ish frame */
+  .phone{
+    width: 320px;
+    height: 660px;
+    background: #FFFBF1;
+    border-radius: 38px;
+    box-shadow:
+      0 0 0 10px #2A1F12,
+      0 0 0 12px #4F3B22,
+      0 30px 60px -20px rgba(60,40,10,.45),
+      0 8px 20px -8px rgba(60,40,10,.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .phone .notch{
+    position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    width:110px; height:24px; background:#2A1F12; border-radius:14px; z-index:30;
+  }
+  .phone .statusbar{
+    position:absolute; top:0; left:0; right:0; height:44px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 14px 22px 0; font-weight:700; font-size:13px; color:var(--ink-900);
+    z-index: 25;
+  }
+  .phone .screen{
+    position:absolute; inset:0; padding-top:44px; padding-bottom:80px;
+    overflow-y:auto; overflow-x:hidden;
+  }
+  .phone .nav{
+    position:absolute; left:0; right:0; bottom:0; height:64px;
+    background: rgba(255,251,241,.95);
+    backdrop-filter: blur(8px);
+    border-top:1px solid var(--line);
+    display:grid; grid-template-columns: repeat(4, 1fr);
+    z-index: 20;
+  }
+  .phone .nav button{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    color: var(--ink-500); font-size:10px; font-weight:700;
+  }
+  .phone .nav button.active{ color: var(--orange-600); }
+  .phone .nav .fab{
+    position:absolute; right:14px; top:-22px;
+    width:44px; height:44px; border-radius:50%;
+    background: var(--orange-500); color:white;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 8px 16px -4px rgba(242,103,31,.6);
+    font-size:22px; font-weight:800; line-height:1;
+  }
+
+  /* Common */
+  .card{ background:#fff; border-radius:18px; box-shadow: 0 2px 0 rgba(60,40,10,.04), 0 8px 18px -10px rgba(60,40,10,.18); }
+  .pill{ display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:999px; font-size:10.5px; font-weight:700; }
+  .pill-cream{ background: var(--cream-200); color: var(--ink-700); }
+  .pill-orange{ background:#FFE3CE; color: var(--orange-600); }
+  .pill-green{ background:#D7F1E1; color:#1F8A52; }
+  .pill-yellow{ background: var(--cream-200); color:#A8741A; }
+  .pill-red{ background:#FFD9D5; color:#C73E2C; }
+  .btn{ border-radius:999px; padding:12px 16px; font-weight:800; text-align:center; }
+  .btn-primary{ background: linear-gradient(180deg,#FF8E5A,#F2671F); color:white; box-shadow: 0 6px 14px -4px rgba(242,103,31,.55); }
+  .btn-ghost{ background: transparent; color: var(--ink-700); border:1.5px solid var(--line); }
+  .chip{ display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:999px; background:#fff; border:1px solid var(--line); font-size:11px; font-weight:600; color:var(--ink-700); }
+  .divider{ height:1px; background: var(--line); }
+  .scroll-hide::-webkit-scrollbar{ display:none; }
+  .scroll-hide{ scrollbar-width:none; }
+
+  /* Phone screen labels */
+  .phone-label{
+    text-align:center; font-weight:800; color:#5C4421; font-size:13px; margin-top:10px;
+    letter-spacing:.04em;
+  }
+  .phone-label .num{
+    display:inline-block; background:#fff; color:var(--orange-600);
+    border-radius:999px; padding:1px 8px; font-size:11px; margin-right:6px;
+    box-shadow: 0 2px 6px -2px rgba(60,40,10,.25);
+  }
+
+  /* Hero */
+  .hero{
+    background: linear-gradient(180deg,#FFF1C2 0%, rgba(255,241,194,0) 100%);
+  }
+  .badge-shadow{ filter: drop-shadow(0 4px 6px rgba(60,40,10,.18)); }
+  .text-stroke-white{
+    -webkit-text-stroke: 4px white;
+    paint-order: stroke fill;
+  }
+
+  /* tab pill */
+  .tabs{ background:#FFEFC2; border-radius:14px; padding:4px; display:grid; grid-template-columns: repeat(3,1fr); gap:4px; }
+  .tabs button{ padding:8px 6px; border-radius:10px; font-size:12px; font-weight:800; color:#A0833F; }
+  .tabs button.on{ background:#fff; color:var(--orange-600); box-shadow: 0 2px 6px -2px rgba(60,40,10,.2); }
+
+  /* gauge */
+  .ring{
+    --p:0; --c:#F2671F; --bg:#FFE7AE;
+    width: 88px; height: 88px; border-radius:50%;
+    background:
+      conic-gradient(var(--c) calc(var(--p)*1%), var(--bg) 0);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .ring > div{ width:74px; height:74px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+
+  /* Speech bubble */
+  .bubble{
+    background:#fff; border:1.5px solid #F4E4B5; padding:10px 12px; border-radius:14px;
+    font-size:12px; line-height:1.55; color:var(--ink-900); position:relative;
+  }
+  .bubble.from-user{ background:#FFE9B8; border-color:#F4D88B; }
+  .bubble.tail-l::before{
+    content:""; position:absolute; left:-7px; top:14px;
+    width:12px; height:12px; background:#fff; border-left:1.5px solid #F4E4B5; border-bottom:1.5px solid #F4E4B5;
+    transform: rotate(45deg);
+  }
+
+  /* Headline title bar */
+  .topbar{ display:flex; align-items:center; gap:10px; padding: 6px 16px 8px; }
+  .topbar .back{ width:30px; height:30px; border-radius:50%; background:#fff; box-shadow: 0 2px 6px -2px rgba(60,40,10,.2); display:flex; align-items:center; justify-content:center; color:#7A5E32; }
+  .topbar h1{ font-weight:900; font-size:18px; letter-spacing:.02em; }
+
+  /* radar chart container */
+  .radar-axis{ font-size:9.5px; font-weight:700; fill:#7A5E32; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ===================== Page header ===================== -->
+<header class="max-w-[1280px] mx-auto px-6 pt-10 pb-6">
+  <div class="flex items-end justify-between gap-6 flex-wrap">
+    <div>
+      <div class="inline-flex items-center gap-2 bg-white/70 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-[#A8741A] shadow">
+        <span>z<sup>z</sup><sup>z</sup></span> UI Mockup · Web Preview
+      </div>
+      <h1 class="mt-3 text-5xl md:text-6xl font-black text-[#3F2E1B] tracking-tight" style="font-family:'Zen Maru Gothic',sans-serif;">
+        サボロー<span class="text-[#F2671F]">.</span>
+      </h1>
+      <p class="mt-2 text-[#6B5034] max-w-xl text-sm md:text-base">
+        タスクを早く終わらせる時代に、あえて<strong>“先延ばし力”</strong>を競うアプリ。
+        以下は MVP 全 10 画面のモックアップ。クリックで該当画面へジャンプできるよ。
+      </p>
+    </div>
+    <nav class="flex flex-wrap gap-2 text-xs font-bold">
+      <a href="#s1" class="chip">① ホーム</a>
+      <a href="#s2" class="chip">② タスク追加</a>
+      <a href="#s3" class="chip">③ 不足情報チャット</a>
+      <a href="#s4" class="chip">④ 定量化</a>
+      <a href="#s5" class="chip">⑤ 承認</a>
+      <a href="#s6" class="chip">⑥ 先延ばし提案</a>
+      <a href="#s7" class="chip">⑦ 本音</a>
+      <a href="#s8" class="chip">⑧ タスク終了</a>
+      <a href="#s9" class="chip">⑨ AIジャッジ</a>
+      <a href="#s10" class="chip">⑩ ランキング</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===================== Reusable SVG defs ===================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Saboroh: a sleepy round chick -->
+    <symbol id="saboro" viewBox="0 0 120 110">
+      <!-- shadow -->
+      <ellipse cx="60" cy="100" rx="38" ry="5" fill="#000" opacity=".08"/>
+      <!-- body -->
+      <path d="M60 14 C92 14 102 42 100 64 C98 88 82 100 60 100 C38 100 22 88 20 64 C18 42 28 14 60 14 Z" fill="#FFD86E"/>
+      <path d="M60 14 C82 14 96 32 98 56 C99 70 92 84 80 91 C72 84 80 60 70 48 C62 39 50 38 42 44 C36 32 44 14 60 14 Z" fill="#FFE6A0" opacity=".7"/>
+      <!-- cheeks -->
+      <ellipse cx="38" cy="62" rx="6" ry="3.5" fill="#F7B5A6"/>
+      <ellipse cx="82" cy="62" rx="6" ry="3.5" fill="#F7B5A6"/>
+      <!-- eyes (sleepy) -->
+      <path d="M40 52 q5 -4 10 0" stroke="#3F2E1B" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M70 52 q5 -4 10 0" stroke="#3F2E1B" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <!-- mouth -->
+      <path d="M55 70 q5 4 10 0" stroke="#3F2E1B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <!-- tuft -->
+      <path d="M58 14 q2 -8 6 -8 q2 4 -2 8" fill="#F2C24A"/>
+      <!-- beak -->
+      <path d="M58 64 l4 4 l-4 2 z" fill="#F2A04A"/>
+    </symbol>
+
+    <!-- Saboroh sleeping (z) -->
+    <symbol id="saboro-zzz" viewBox="0 0 140 110">
+      <use href="#saboro" x="10" y="0"/>
+      <text x="110" y="22" font-family="M PLUS Rounded 1c" font-weight="900" fill="#A8741A" font-size="14">z</text>
+      <text x="118" y="14" font-family="M PLUS Rounded 1c" font-weight="900" fill="#A8741A" font-size="11">z</text>
+      <text x="124" y="8"  font-family="M PLUS Rounded 1c" font-weight="900" fill="#A8741A" font-size="9">z</text>
+    </symbol>
+
+    <!-- mini friends -->
+    <symbol id="penguin" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <path d="M40 12 c18 0 26 14 26 32 c0 16 -10 26 -26 26 c-16 0 -26 -10 -26 -26 c0 -18 8 -32 26 -32 z" fill="#5A6470"/>
+      <path d="M40 26 c10 0 16 8 16 18 c0 12 -6 20 -16 20 c-10 0 -16 -8 -16 -20 c0 -10 6 -18 16 -18z" fill="#FFFBF1"/>
+      <circle cx="33" cy="38" r="2.4" fill="#3F2E1B"/>
+      <circle cx="47" cy="38" r="2.4" fill="#3F2E1B"/>
+      <path d="M37 46 l3 4 l3 -4 z" fill="#F2A04A"/>
+    </symbol>
+    <symbol id="hamu" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <path d="M40 14 c18 0 28 14 28 30 c0 14 -10 26 -28 26 c-18 0 -28 -12 -28 -26 c0 -16 10 -30 28 -30z" fill="#F2B07A"/>
+      <ellipse cx="30" cy="44" rx="5" ry="3" fill="#FFD3B5"/>
+      <ellipse cx="50" cy="44" rx="5" ry="3" fill="#FFD3B5"/>
+      <circle cx="32" cy="38" r="2.2" fill="#3F2E1B"/>
+      <circle cx="48" cy="38" r="2.2" fill="#3F2E1B"/>
+      <path d="M37 48 q3 3 6 0" stroke="#3F2E1B" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M22 22 q-2 -8 6 -10 q4 6 -2 10z" fill="#F2B07A"/>
+      <path d="M58 22 q2 -8 -6 -10 q-4 6 2 10z" fill="#F2B07A"/>
+    </symbol>
+    <symbol id="bird" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <path d="M40 12 c18 0 26 14 26 30 c0 16 -10 28 -26 28 c-16 0 -26 -12 -26 -28 c0 -16 8 -30 26 -30z" fill="#7BAEEB"/>
+      <ellipse cx="40" cy="46" rx="14" ry="12" fill="#D9EAFB"/>
+      <circle cx="34" cy="40" r="2.2" fill="#3F2E1B"/>
+      <circle cx="46" cy="40" r="2.2" fill="#3F2E1B"/>
+      <path d="M37 50 l3 4 l3 -4 z" fill="#F2A04A"/>
+    </symbol>
+    <symbol id="orange" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <circle cx="40" cy="44" r="28" fill="#FFA94D"/>
+      <circle cx="40" cy="44" r="22" fill="#FFB871"/>
+      <circle cx="34" cy="40" r="2.2" fill="#3F2E1B"/>
+      <circle cx="46" cy="40" r="2.2" fill="#3F2E1B"/>
+      <path d="M37 48 q3 3 6 0" stroke="#3F2E1B" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M40 14 q-4 -8 4 -10 q6 4 0 10z" fill="#5BB16E"/>
+    </symbol>
+    <symbol id="sheep" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <circle cx="26" cy="34" r="9" fill="#FFFBF1"/>
+      <circle cx="38" cy="22" r="9" fill="#FFFBF1"/>
+      <circle cx="52" cy="26" r="9" fill="#FFFBF1"/>
+      <circle cx="60" cy="40" r="9" fill="#FFFBF1"/>
+      <circle cx="22" cy="48" r="9" fill="#FFFBF1"/>
+      <circle cx="58" cy="56" r="9" fill="#FFFBF1"/>
+      <circle cx="40" cy="46" r="20" fill="#FFFBF1"/>
+      <ellipse cx="40" cy="46" rx="14" ry="12" fill="#F4E4B5"/>
+      <circle cx="34" cy="42" r="2" fill="#3F2E1B"/>
+      <circle cx="46" cy="42" r="2" fill="#3F2E1B"/>
+      <path d="M37 50 q3 2 6 0" stroke="#3F2E1B" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- icons -->
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="currentColor"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="3.4" rx="1.2" fill="currentColor"/><rect x="4" y="10.3" width="16" height="3.4" rx="1.2" fill="currentColor"/><rect x="4" y="15.6" width="16" height="3.4" rx="1.2" fill="currentColor"/></symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 18h18l-1 3H4zM3 7l5 4 4-6 4 6 5-4-2 9H5z" fill="currentColor"/></symbol>
+    <symbol id="i-user"  viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z" fill="currentColor"/></symbol>
+    <symbol id="i-back"  viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4 4 10-10" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-warn"  viewBox="0 0 24 24"><path d="M12 3l11 19H1z" fill="#F4B73A"/><rect x="11" y="10" width="2" height="6" fill="#3F2E1B"/><rect x="11" y="17" width="2" height="2" fill="#3F2E1B"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="8" cy="9" r="3.4" fill="currentColor"/><circle cx="16" cy="9" r="3.4" fill="currentColor"/><path d="M2 19c0-3 2.7-5 6-5s6 2 6 5zm10 0c0-3 2-5 5-5s5 2 5 5z" fill="currentColor"/></symbol>
+    <symbol id="i-paper" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="currentColor"/></symbol>
+    <symbol id="i-fire"  viewBox="0 0 24 24"><path d="M12 3c2 4 5 5 5 9a5 5 0 1 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3 1-5 1-8z" fill="#F2671F"/></symbol>
+    <symbol id="i-mail"  viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2" fill="currentColor"/><path d="M3 7l9 7 9-7" stroke="#fff" stroke-width="2" fill="none"/></symbol>
+    <symbol id="i-doc"   viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="currentColor"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#fff" stroke-width="1.6"/></symbol>
+    <symbol id="i-plus"  viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-bolt"  viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="currentColor"/></symbol>
+    <symbol id="i-zzz"   viewBox="0 0 24 24"><path d="M5 5h8L6 17h8v2H4v-2l7-12H5z M14 11h6l-5 7h5v2h-7v-2l5-7h-4z" fill="currentColor"/></symbol>
+    <symbol id="i-send"  viewBox="0 0 24 24"><path d="M3 11l18-8-7 18-3-7z" fill="currentColor"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 4h12v3a4 4 0 1 1-8 0V4zm-3 0h3v4a3 3 0 0 1-3-3zm15 0h3v1a3 3 0 0 1-3 3zM10 12h4v4h2v3H8v-3h2z" fill="currentColor"/></symbol>
+    <symbol id="i-medal" viewBox="0 0 24 24"><circle cx="12" cy="14" r="6" fill="#F2C24A"/><path d="M8 2l4 7 4-7H8z" fill="#F2671F"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2l1.7 5.3L19 9l-5.3 1.7L12 16l-1.7-5.3L5 9l5.3-1.7z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+
+<!-- ===================== Phone grid ===================== -->
+<main class="max-w-[1280px] mx-auto px-6 pb-24">
+<div class="grid gap-x-8 gap-y-12 justify-items-center"
+     style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+
+
+<!-- ============================================================
+  ① ホーム
+============================================================ -->
+<section id="s1" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide">
+      <!-- Hero -->
+      <div class="hero pb-3 px-4 pt-2">
+        <div class="flex items-start justify-between">
+          <div>
+            <h1 class="text-3xl font-black text-[#3F2E1B] leading-none" style="font-family:'Zen Maru Gothic'">
+              サボロー<span class="text-[#A8741A] text-base align-top">z<sup>z</sup><sup>z</sup></span>
+            </h1>
+            <p class="text-[12px] text-[#7A5E32] mt-1.5 font-semibold">今日も、いい感じに寝かそう。</p>
+          </div>
+          <svg class="w-[78px] h-[72px] -mt-1"><use href="#saboro-zzz"/></svg>
+        </div>
+
+        <!-- Score card -->
+        <div class="card mt-3 p-4 relative overflow-hidden">
+          <div class="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-[#FFF1C2] opacity-70"></div>
+          <div class="relative flex items-center gap-3">
+            <div class="w-14 h-14 rounded-full bg-[#FFE7AE] flex items-center justify-center badge-shadow">
+              <svg class="w-9 h-9 text-[#F2671F]"><use href="#i-trophy"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="text-[11px] font-bold text-[#A8741A]">今週のサボリスコア</div>
+              <div class="flex items-end gap-2">
+                <div class="text-4xl font-black text-[#3F2E1B] leading-none">482</div>
+                <div class="text-[10px] text-[#7A5E32] font-bold mb-0.5">先週 +36</div>
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="text-[10px] text-[#7A5E32] font-bold">ランキング</div>
+              <div class="text-xl font-black text-[#F2671F] leading-none mt-0.5">2<span class="text-xs">位</span></div>
+              <div class="text-[10px] text-[#7A5E32] font-bold mt-0.5">通り中4件</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 今日のタスク -->
+      <div class="px-4 mt-2">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-sm font-black text-[#3F2E1B]">今日のタスク</h2>
+          <a class="text-[11px] font-bold text-[#A8741A]">すべて見る ›</a>
+        </div>
+
+        <div class="space-y-2">
+          <!-- task 1 -->
+          <div class="card p-3 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#FFE7AE] flex items-center justify-center text-[#A8741A]">
+              <svg class="w-5 h-5"><use href="#i-doc"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-extrabold text-[13px] text-[#3F2E1B] truncate">会議資料作成</div>
+              <div class="flex flex-wrap items-center gap-1 mt-1">
+                <span class="pill pill-cream">寝かせ中</span>
+                <span class="pill pill-orange">⚑ 5/14 18:00</span>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-[10px] text-[#7A5E32] font-bold">サボリスコア</div>
+              <div class="text-lg font-black text-[#F2671F] leading-none">126</div>
+            </div>
+          </div>
+          <!-- task 2 -->
+          <div class="card p-3 flex items-center gap-3 ring-1 ring-[#FFD9D5]">
+            <div class="w-10 h-10 rounded-xl bg-[#FFD9D5] flex items-center justify-center text-[#C73E2C]">
+              <svg class="w-5 h-5"><use href="#i-mail"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-extrabold text-[13px] text-[#3F2E1B] truncate">返信まとめ</div>
+              <div class="flex flex-wrap items-center gap-1 mt-1">
+                <span class="pill pill-red">⚠ 要チェック</span>
+                <span class="pill pill-cream">9日 12:00</span>
+              </div>
+              <div class="text-[10px] text-[#A8741A] font-bold mt-1">必要情報が足りないかも</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-[10px] text-[#7A5E32] font-bold">サボリスコア</div>
+              <div class="text-lg font-black text-[#F2671F] leading-none">82</div>
+            </div>
+          </div>
+          <!-- task 3 -->
+          <div class="card p-3 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-[#D7F1E1] flex items-center justify-center text-[#1F8A52]">
+              <svg class="w-5 h-5"><use href="#i-paper"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-extrabold text-[13px] text-[#3F2E1B] truncate">企画メモ整理</div>
+              <div class="flex items-center gap-1.5 mt-1">
+                <span class="pill pill-green">寝かせ中</span>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-[10px] text-[#7A5E32] font-bold">サボリスコア</div>
+              <div class="text-lg font-black text-[#F2671F] leading-none">74</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- サボローのひとこと -->
+      <div class="px-4 mt-4">
+        <h2 class="text-sm font-black text-[#3F2E1B] mb-2">サボローのひとこと</h2>
+        <div class="card p-3 flex gap-2 items-start bg-[#FFF6D5]">
+          <svg class="w-12 h-12 shrink-0 -mt-1"><use href="#saboro"/></svg>
+          <p class="text-[12px] leading-relaxed text-[#3F2E1B]">
+            資料作成、まだ空気が温まってないみたい…<br/>
+            あと<b class="text-[#F2671F]">4時間</b>くらいは寝かせてもいいかもよぉ。
+          </p>
+        </div>
+      </div>
+
+      <!-- 注目ランキング -->
+      <div class="px-4 mt-4">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-sm font-black text-[#3F2E1B]">注目ランキング</h2>
+          <a class="text-[11px] font-bold text-[#A8741A]">もっと見る ›</a>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="card p-2 text-center">
+            <svg class="w-12 h-12 mx-auto"><use href="#penguin"/></svg>
+            <div class="text-[11px] font-bold text-[#3F2E1B] mt-1">ねむお</div>
+            <div class="text-[10px] text-[#7A5E32]">サボリスコア</div>
+            <div class="text-base font-black text-[#F2671F] leading-none mt-0.5">612</div>
+          </div>
+          <div class="card p-2 text-center bg-[#FFF6D5]">
+            <svg class="w-12 h-12 mx-auto"><use href="#saboro"/></svg>
+            <div class="text-[11px] font-bold text-[#3F2E1B] mt-1">あなた</div>
+            <div class="text-[10px] text-[#7A5E32]">サボリスコア</div>
+            <div class="text-base font-black text-[#F2671F] leading-none mt-0.5">482</div>
+          </div>
+          <div class="card p-2 text-center">
+            <svg class="w-12 h-12 mx-auto"><use href="#bird"/></svg>
+            <div class="text-[11px] font-bold text-[#3F2E1B] mt-1">ぐっち5丸</div>
+            <div class="text-[10px] text-[#7A5E32]">サボリスコア</div>
+            <div class="text-base font-black text-[#F2671F] leading-none mt-0.5">398</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-6"></div>
+    </div>
+
+    <!-- bottom nav -->
+    <div class="nav">
+      <button class="active"><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+      <div class="fab"><svg class="w-5 h-5 text-white"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">01</span>ホーム</div>
+</section>
+
+
+<!-- ============================================================
+  ② タスク追加
+============================================================ -->
+<section id="s2" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide">
+      <div class="topbar">
+        <button class="back"><svg class="w-4 h-4"><use href="#i-back"/></svg></button>
+        <h1>タスク追加</h1>
+        <svg class="w-12 h-12 ml-auto"><use href="#saboro"/></svg>
+      </div>
+
+      <div class="px-4">
+        <div class="card p-3">
+          <div class="text-[11px] font-bold text-[#A8741A]">ひとこと入力</div>
+          <div class="mt-2 p-2 bg-[#FFF6D5] rounded-xl text-[13px] font-bold text-[#3F2E1B]">
+            来週火曜までに営業資料を作る
+          </div>
+          <div class="mt-2 text-[11px] text-[#7A5E32]">もう少し詳しく伝える?</div>
+          <div class="mt-1.5 flex flex-wrap gap-1.5">
+            <span class="chip">⏰ 締切</span>
+            <span class="chip">👥 関係者</span>
+            <span class="chip">⚠ 遅れたらまずい度</span>
+            <span class="chip">⌛ 作業時間</span>
+          </div>
+        </div>
+
+        <h2 class="mt-4 mb-2 text-[13px] font-black text-[#3F2E1B] flex items-center gap-1">
+          <svg class="w-4 h-4 text-[#F2671F]"><use href="#i-spark"/></svg> AIが整理した候補
+        </h2>
+
+        <div class="card overflow-hidden">
+          <div class="px-3 py-2 bg-[#FFF6D5] flex items-center justify-between">
+            <div class="text-[11px] text-[#A8741A] font-bold">タスク名</div>
+            <div class="text-[13px] font-black text-[#3F2E1B]">営業資料作成</div>
+          </div>
+          <div class="divide-y divide-[#F4E4B5]">
+            <div class="flex justify-between px-3 py-2.5 text-[12px]"><span class="text-[#7A5E32]">締切</span><span class="font-bold text-[#3F2E1B]">5/14 18:00</span></div>
+            <div class="flex justify-between px-3 py-2.5 text-[12px]"><span class="text-[#7A5E32]">関係者</span><span class="font-bold text-[#3F2E1B]">田中さん / 営業チーム</span></div>
+            <div class="flex justify-between px-3 py-2.5 text-[12px]"><span class="text-[#7A5E32]">見積作業時間</span><span class="font-bold text-[#3F2E1B]">2.5時間</span></div>
+            <div class="flex justify-between px-3 py-2.5 text-[12px]"><span class="text-[#7A5E32]">心理的重さ</span><span class="font-bold text-[#3F2E1B]">やや高い</span></div>
+          </div>
+        </div>
+
+        <div class="bubble mt-3 flex gap-2 items-start">
+          <svg class="w-10 h-10 shrink-0 -mt-1"><use href="#saboro"/></svg>
+          <p>一言だけでも、サボローがほどよく整理するよぉ。</p>
+        </div>
+
+        <div class="mt-3 space-y-2">
+          <button class="btn btn-primary w-full flex items-center justify-center gap-2">
+            <svg class="w-4 h-4"><use href="#i-spark"/></svg> AIで整理する
+          </button>
+          <button class="btn btn-ghost w-full">手入力で追加</button>
+        </div>
+        <div class="h-4"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button class="active"><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+      <div class="fab"><svg class="w-5 h-5 text-white"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">02</span>タスク追加</div>
+</section>
+
+
+<!-- ============================================================
+  ③ 不足情報を埋める チャット
+============================================================ -->
+<section id="s3" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide pb-2 flex flex-col">
+      <div class="topbar">
+        <button class="back"><svg class="w-4 h-4"><use href="#i-back"/></svg></button>
+        <h1 class="text-[16px]">不足情報を埋める</h1>
+        <span class="ml-auto pill pill-cream">会議資料作成</span>
+      </div>
+
+      <!-- progress chips -->
+      <div class="px-4">
+        <div class="card p-3 grid grid-cols-4 gap-2">
+          <div class="text-center">
+            <div class="text-[10px] text-[#7A5E32] font-bold">締切</div>
+            <div class="mt-1 mx-auto w-7 h-7 rounded-full bg-[#D7F1E1] text-[#1F8A52] flex items-center justify-center"><svg class="w-4 h-4"><use href="#i-check"/></svg></div>
+          </div>
+          <div class="text-center">
+            <div class="text-[10px] text-[#7A5E32] font-bold">関係者</div>
+            <div class="mt-1 mx-auto w-7 h-7 rounded-full bg-[#D7F1E1] text-[#1F8A52] flex items-center justify-center"><svg class="w-4 h-4"><use href="#i-check"/></svg></div>
+          </div>
+          <div class="text-center">
+            <div class="text-[10px] text-[#7A5E32] font-bold">まずさ</div>
+            <div class="mt-1 mx-auto w-7 h-7 rounded-full bg-[#D7F1E1] text-[#1F8A52] flex items-center justify-center"><svg class="w-4 h-4"><use href="#i-check"/></svg></div>
+          </div>
+          <div class="text-center">
+            <div class="text-[10px] text-[#7A5E32] font-bold">作業時間</div>
+            <div class="mt-1 mx-auto w-7 h-7 rounded-full bg-[#D7F1E1] text-[#1F8A52] flex items-center justify-center"><svg class="w-4 h-4"><use href="#i-check"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- chat -->
+      <div class="px-4 mt-3 space-y-3 flex-1">
+        <div class="flex items-end gap-2">
+          <svg class="w-9 h-9 shrink-0"><use href="#saboro"/></svg>
+          <div class="bubble tail-l max-w-[75%]">
+            <div class="text-[10px] text-[#A8741A] font-bold mb-0.5">サボロー</div>
+            このタスク、もう少しだけ教えてほしいよ。<br/>締切はいつ?
+          </div>
+        </div>
+        <div class="flex justify-end"><div class="bubble from-user max-w-[70%]">今日の18時まで</div></div>
+
+        <div class="flex items-end gap-2">
+          <svg class="w-9 h-9 shrink-0"><use href="#saboro"/></svg>
+          <div class="bubble tail-l max-w-[75%]">
+            <div class="text-[10px] text-[#A8741A] font-bold mb-0.5">サボロー</div>
+            関係者は誰かなぁ?
+          </div>
+        </div>
+        <div class="flex justify-end"><div class="bubble from-user max-w-[70%]">部長と営業チーム</div></div>
+
+        <div class="flex items-end gap-2">
+          <svg class="w-9 h-9 shrink-0"><use href="#saboro"/></svg>
+          <div class="bubble tail-l max-w-[75%]">
+            <div class="text-[10px] text-[#A8741A] font-bold mb-0.5">サボロー</div>
+            遅れたらどれくらいまずい?
+          </div>
+        </div>
+        <div class="flex justify-end"><div class="bubble from-user max-w-[70%]">かなりまずい</div></div>
+
+        <div class="flex items-end gap-2">
+          <svg class="w-9 h-9 shrink-0"><use href="#saboro"/></svg>
+          <div class="bubble tail-l max-w-[75%]">
+            <div class="text-[10px] text-[#A8741A] font-bold mb-0.5">サボロー</div>
+            作業時間はどれくらいかかりそう?
+          </div>
+        </div>
+        <div class="flex justify-end"><div class="bubble from-user max-w-[70%]">2時間くらい</div></div>
+      </div>
+
+      <!-- input bar -->
+      <div class="px-4 mt-2">
+        <div class="card flex items-center gap-2 px-3 py-2">
+          <input class="flex-1 bg-transparent outline-none text-[12px] placeholder:text-[#B6A179]" placeholder="メッセージを入力" />
+          <button class="text-[#A8741A]">📎</button>
+          <button class="w-7 h-7 rounded-full bg-[#FF7A3D] text-white flex items-center justify-center"><svg class="w-3.5 h-3.5"><use href="#i-send"/></svg></button>
+        </div>
+      </div>
+      <div class="h-2"></div>
+    </div>
+
+    <div class="nav">
+      <button><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button class="active"><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">03</span>不足情報を埋めるチャット</div>
+</section>
+
+
+<!-- ============================================================
+  ④ タスク定量化
+============================================================ -->
+<section id="s4" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide">
+      <div class="topbar">
+        <button class="back"><svg class="w-4 h-4"><use href="#i-back"/></svg></button>
+        <h1>タスク定量化</h1>
+        <svg class="w-12 h-12 ml-auto"><use href="#saboro"/></svg>
+      </div>
+
+      <div class="px-4">
+        <div class="card p-3">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-[#FFE7AE] flex items-center justify-center text-[#A8741A]"><svg class="w-5 h-5"><use href="#i-doc"/></svg></div>
+            <div class="flex-1">
+              <div class="font-extrabold text-[14px] text-[#3F2E1B]">会議資料作成</div>
+              <div class="text-[10px] text-[#7A5E32] font-bold">寝かせ中</div>
+            </div>
+            <div class="text-right">
+              <div class="text-3xl font-black text-[#F2671F] leading-none">76<span class="text-sm text-[#7A5E32] font-bold">/100</span></div>
+              <div class="text-[10px] text-[#7A5E32] font-bold mt-0.5">サボリポテンシャル ⓘ</div>
+            </div>
+          </div>
+
+          <!-- Radar chart -->
+          <div class="mt-3 flex items-center gap-2">
+            <svg viewBox="0 0 240 220" class="w-[55%] h-auto">
+              <g transform="translate(120,110)">
+                <!-- grid -->
+                <g fill="none" stroke="#F0E4C8" stroke-width="1">
+                  <polygon points="0,-80 76.08,-24.72 46.99,64.72 -46.99,64.72 -76.08,-24.72"/>
+                  <polygon points="0,-60 57.06,-18.54 35.24,48.54 -35.24,48.54 -57.06,-18.54"/>
+                  <polygon points="0,-40 38.04,-12.36 23.50,32.36 -23.50,32.36 -38.04,-12.36"/>
+                  <polygon points="0,-20 19.02,-6.18 11.75,16.18 -11.75,16.18 -19.02,-6.18"/>
+                </g>
+                <!-- axes -->
+                <g stroke="#F0E4C8" stroke-width="1">
+                  <line x1="0" y1="0" x2="0"      y2="-80"/>
+                  <line x1="0" y1="0" x2="76.08"  y2="-24.72"/>
+                  <line x1="0" y1="0" x2="46.99"  y2="64.72"/>
+                  <line x1="0" y1="0" x2="-46.99" y2="64.72"/>
+                  <line x1="0" y1="0" x2="-76.08" y2="-24.72"/>
+                </g>
+                <!-- value polygon: タスク重さ72,心理81,逃げ43,危険68,作業59 -->
+                <polygon points="0,-57.6 61.62,-20.02 20.21,27.83 -31.95,44.01 -44.89,-14.59"
+                         fill="#3FB67E" fill-opacity=".22" stroke="#3FB67E" stroke-width="2.2" stroke-linejoin="round"/>
+                <!-- value dots -->
+                <g fill="#fff" stroke="#3FB67E" stroke-width="2">
+                  <circle cx="0" cy="-57.6" r="3"/>
+                  <circle cx="61.62" cy="-20.02" r="3"/>
+                  <circle cx="20.21" cy="27.83" r="3"/>
+                  <circle cx="-31.95" cy="44.01" r="3"/>
+                  <circle cx="-44.89" cy="-14.59" r="3"/>
+                </g>
+                <!-- labels -->
+                <g class="radar-axis">
+                  <text x="0"   y="-90" text-anchor="middle">タスク重さ</text>
+                  <text x="92"  y="-26" text-anchor="middle">心理的抵抗</text>
+                  <text x="60"  y="80"  text-anchor="middle">逃げやすさ</text>
+                  <text x="-60" y="80"  text-anchor="middle">危険度</text>
+                  <text x="-92" y="-26" text-anchor="middle">作業量</text>
+                </g>
+              </g>
+            </svg>
+            <ul class="flex-1 space-y-1.5 text-[12px]">
+              <li class="flex justify-between"><span>🪨 タスク重さ</span><b>72</b></li>
+              <li class="flex justify-between"><span>💗 心理抵抗</span><b>81</b></li>
+              <li class="flex justify-between"><span>🏃 逃げやすさ</span><b>43</b></li>
+              <li class="flex justify-between"><span>🔥 危険度</span><b>68</b></li>
+              <li class="flex justify-between"><span>⌛ 作業量</span><b>59</b></li>
+            </ul>
+          </div>
+        </div>
+
+        <h2 class="mt-4 mb-2 text-[13px] font-black flex items-center gap-1">
+          <svg class="w-4 h-4 text-[#F2671F]"><use href="#i-spark"/></svg> AIの理由
+        </h2>
+        <div class="card divide-y divide-[#F4E4B5]">
+          <div class="flex items-start gap-2 p-3 text-[12px]"><span>👥</span><span>関係者が多く、遅延の影響が大きい</span></div>
+          <div class="flex items-start gap-2 p-3 text-[12px]"><span>💗</span><span>心理的抵抗が高く、着手ハードルがある</span></div>
+          <div class="flex items-start gap-2 p-3 text-[12px]"><span>🏃</span><span>ただし逃げやすさはある</span></div>
+        </div>
+
+        <div class="bubble mt-3 flex items-start gap-2">
+          <svg class="w-10 h-10 -mt-1"><use href="#saboro"/></svg>
+          <p>このタスク、重いけど伸ばせすぎはダメだよぉ。</p>
+        </div>
+
+        <div class="mt-3 space-y-2">
+          <button class="btn btn-primary w-full">この内容で進む ›</button>
+          <button class="btn btn-ghost w-full">見直す</button>
+        </div>
+        <div class="h-4"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button class="active"><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+      <div class="fab"><svg class="w-5 h-5 text-white"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">04</span>タスク定量化(レーダー)</div>
+</section>
+
+
+<!-- ============================================================
+  ⑤ 承認して登録
+============================================================ -->
+<section id="s5" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide">
+      <div class="topbar">
+        <button class="back"><svg class="w-4 h-4"><use href="#i-back"/></svg></button>
+        <h1 class="text-[16px]">承認して登録</h1>
+        <svg class="w-12 h-12 ml-auto"><use href="#saboro"/></svg>
+      </div>
+
+      <div class="px-4">
+        <p class="text-[12px] text-[#7A5E32] font-bold mb-2">タスクの内容を確認してね</p>
+        <div class="card p-3">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-[#FFE7AE] flex items-center justify-center text-[#A8741A]"><svg class="w-5 h-5"><use href="#i-doc"/></svg></div>
+            <div class="font-extrabold text-[14px]">会議資料作成</div>
+          </div>
+          <div class="mt-2 divide-y divide-[#F4E4B5] text-[12px]">
+            <div class="flex justify-between py-2"><span class="text-[#7A5E32]">締切</span><b>今日 18:00</b></div>
+            <div class="flex justify-between py-2"><span class="text-[#7A5E32]">関係者</span><b>部長 / 営業チーム</b></div>
+            <div class="flex justify-between py-2"><span class="text-[#7A5E32]">作業時間</span><b>2時間</b></div>
+            <div class="flex justify-between py-2"><span class="text-[#7A5E32]">遅れたらまずい度</span><b class="text-[#C73E2C]">高い</b></div>
+            <div class="flex justify-between py-2"><span class="text-[#7A5E32]">心理的抵抗</span><b>81</b></div>
+          </div>
+          <div class="mt-2 flex flex-wrap gap-1.5">
+            <span class="pill pill-orange">🚩 重要度高</span>
+            <span class="pill pill-cream">資料作成</span>
+          </div>
+        </div>
+
+        <!-- summary -->
+        <div class="grid grid-cols-2 gap-2 mt-3">
+          <div class="card p-3 text-center">
+            <div class="text-[10px] text-[#7A5E32] font-bold">タスクスコア</div>
+            <div class="text-2xl font-black text-[#1F8A52] leading-tight mt-1 flex items-center justify-center gap-1">
+              <svg class="w-5 h-5"><use href="#i-bolt"/></svg> 76
+            </div>
+          </div>
+          <div class="card p-3 text-center">
+            <div class="text-[10px] text-[#7A5E32] font-bold">初期サボリ予測</div>
+            <div class="text-2xl font-black text-[#F2671F] leading-tight mt-1">3.5時間</div>
+          </div>
+        </div>
+
+        <h2 class="mt-4 mb-2 text-[13px] font-black flex items-center gap-1">✏️ ブラッシュアップ</h2>
+        <div class="card divide-y divide-[#F4E4B5]">
+          <div class="flex justify-between items-center py-2.5 px-3 text-[12px]"><span class="text-[#7A5E32]">締切</span><span class="font-bold flex items-center gap-1">今日 18:00 ›</span></div>
+          <div class="flex justify-between items-center py-2.5 px-3 text-[12px]"><span class="text-[#7A5E32]">関係者</span><span class="font-bold flex items-center gap-1">部長 / 営業チーム ›</span></div>
+          <div class="flex justify-between items-center py-2.5 px-3 text-[12px]"><span class="text-[#7A5E32]">作業時間</span><span class="font-bold flex items-center gap-1">2時間 ›</span></div>
+          <div class="py-2.5 px-3 text-[12px]"><div class="text-[#7A5E32]">メモ・補足</div><div class="mt-1 text-[#A8741A]">タップして編集</div></div>
+        </div>
+
+        <div class="bubble mt-3 flex items-start gap-2">
+          <svg class="w-10 h-10 -mt-1"><use href="#saboro"/></svg>
+          <p>ズレてたら直しておこうよぉ。<br/>ここでのすり合わせが大事。</p>
+        </div>
+
+        <div class="mt-3 space-y-2">
+          <button class="btn btn-primary w-full">この内容で登録 ›</button>
+          <button class="btn btn-ghost w-full">ブラッシュアップする</button>
+        </div>
+        <div class="h-4"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button class="active"><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">05</span>承認して登録</div>
+</section>
+
+
+<!-- ============================================================
+  ⑥ 先延ばし提案
+============================================================ -->
+<section id="s6" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide">
+      <div class="topbar">
+        <button class="back"><svg class="w-4 h-4"><use href="#i-back"/></svg></button>
+        <h1>先延ばし提案</h1>
+        <span class="ml-auto pill pill-cream">会議資料作成</span>
+      </div>
+
+      <div class="px-4">
+        <!-- hero illustration -->
+        <div class="card p-3 bg-gradient-to-b from-[#FFF6D5] to-white relative overflow-hidden">
+          <div class="absolute -right-3 -bottom-3 opacity-30 text-7xl">☁️</div>
+          <div class="flex items-center gap-2">
+            <svg class="w-20 h-20"><use href="#saboro-zzz"/></svg>
+            <p class="text-[12.5px] leading-relaxed font-bold text-[#3F2E1B]">
+              このタスクは、まだ着手しなくても<br/>大丈夫だよぉ。
+            </p>
+          </div>
+        </div>
+
+        <!-- recommended sleep -->
+        <div class="card p-4 mt-3 flex items-center gap-3 ring-2 ring-[#FFE7AE]">
+          <div class="text-left">
+            <div class="text-[11px] font-bold text-[#A8741A]">⏱ おすすめサボり時間</div>
+            <div class="flex items-baseline gap-1.5 mt-1">
+              <span class="text-[14px] font-bold text-[#7A5E32]">あと</span>
+              <span class="text-5xl font-black text-[#F2671F] leading-none">4</span>
+              <span class="text-xl font-black text-[#3F2E1B]">時間</span>
+            </div>
+          </div>
+          <div class="ml-auto w-16 h-16 rounded-full bg-[#FFE7AE] flex items-center justify-center text-[#A8741A]">
+            <svg class="w-9 h-9"><use href="#i-clock"/></svg>
+          </div>
+        </div>
+
+        <h2 class="mt-4 mb-2 text-[13px] font-black flex items-center gap-1">📝 理由</h2>
+        <div class="card divide-y divide-[#F4E4B5]">
+          <div class="flex items-start gap-2 p-3 text-[12px]"><span>👥</span><span>関係者Bさんの確認がまだ終わっていない</span></div>
+          <div class="flex items-start gap-2 p-3 text-[12px]"><svg class="w-4 h-4 mt-0.5"><use href="#i-warn"/></svg><span>今進めると手戻りになりそう</span></div>
+          <div class="flex items-start gap-2 p-3 text-[12px]"><span>📨</span><span>先に短い返信タスクを片づける方が効率的</span></div>
+        </div>
+
+        <!-- next checkin -->
+        <div class="card mt-3 p-3 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-[12px] font-bold text-[#3F2E1B]">📅 次の見直し</div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-black text-[#3F2E1B]">14:00</span>
+            <svg class="w-9 h-9"><use href="#saboro"/></svg>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mt-3">
+          <button class="btn flex items-center justify-center gap-1 bg-[#3FB67E] text-white shadow">
+            <svg class="w-4 h-4"><use href="#i-zzz"/></svg> 寝かせる
+          </button>
+          <button class="btn btn-primary flex items-center justify-center gap-1">
+            <svg class="w-4 h-4"><use href="#i-bolt"/></svg> 今やる
+          </button>
+        </div>
+        <div class="h-4"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button class="active"><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+      <div class="fab"><svg class="w-5 h-5 text-white"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">06</span>先延ばし提案</div>
+</section>
+
+
+<!-- ============================================================
+  ⑦ 本音を教えて
+============================================================ -->
+<section id="s7" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide">
+      <div class="topbar">
+        <button class="back"><svg class="w-4 h-4"><use href="#i-back"/></svg></button>
+        <h1>本音を教えて</h1>
+        <svg class="w-12 h-12 ml-auto"><use href="#saboro-zzz"/></svg>
+      </div>
+
+      <div class="px-4">
+        <div class="card p-3">
+          <div class="text-[12.5px] font-black text-[#3F2E1B] mb-2">😶‍🌫️ 今やりたくない本当の理由は?</div>
+          <ul class="divide-y divide-[#F4E4B5]">
+            <li class="flex items-center gap-2 py-2.5 text-[12px]">
+              <span class="w-7 h-7 rounded-lg bg-[#FFE7AE] text-[#A8741A] flex items-center justify-center">👥</span>
+              <span class="flex-1">相手が気重な</span>
+              <span class="w-5 h-5 rounded-full border-2 border-[#F0E4C8]"></span>
+            </li>
+            <li class="flex items-center gap-2 py-2.5 text-[12px]">
+              <span class="w-7 h-7 rounded-lg bg-[#FFE7AE] text-[#A8741A] flex items-center justify-center">⌛</span>
+              <span class="flex-1">終わりが見えない</span>
+              <span class="w-5 h-5 rounded-full border-2 border-[#F0E4C8]"></span>
+            </li>
+            <li class="flex items-center gap-2 py-2.5 text-[12px]">
+              <span class="w-7 h-7 rounded-lg bg-[#FFE7AE] text-[#A8741A] flex items-center justify-center">📥</span>
+              <span class="flex-1">情報が足りない</span>
+              <span class="w-5 h-5 rounded-full border-2 border-[#F0E4C8]"></span>
+            </li>
+            <li class="flex items-center gap-2 py-2.5 text-[12px] bg-[#FFF6D5] rounded-lg px-1.5">
+              <span class="w-7 h-7 rounded-lg bg-[#F2671F] text-white flex items-center justify-center">💣</span>
+              <span class="flex-1 font-bold text-[#3F2E1B]">単純に嫌い</span>
+              <span class="w-5 h-5 rounded-full bg-[#F2671F] text-white flex items-center justify-center"><svg class="w-3 h-3"><use href="#i-check"/></svg></span>
+            </li>
+            <li class="flex items-center gap-2 py-2.5 text-[12px]">
+              <span class="w-7 h-7 rounded-lg bg-[#FFE7AE] text-[#A8741A] flex items-center justify-center">⚡</span>
+              <span class="flex-1">他の作業を先にやりたい</span>
+              <span class="w-5 h-5 rounded-full border-2 border-[#F0E4C8]"></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="mt-3">
+          <div class="text-[12px] font-black text-[#3F2E1B] mb-2">🛌 先延ばしは</div>
+          <div class="grid grid-cols-2 gap-2">
+            <button class="btn bg-[#3FB67E] text-white">許容する</button>
+            <button class="btn btn-ghost">許容しない</button>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <div class="text-[12px] font-black text-[#3F2E1B] mb-2">📝 ひとこと本音メモ</div>
+          <div class="card p-3 text-[12px] text-[#3F2E1B]">
+            部長レビューが重い…
+            <div class="text-right text-[10px] text-[#A8741A] mt-2 font-bold">10/200</div>
+          </div>
+        </div>
+
+        <div class="bubble mt-3 flex items-start gap-2">
+          <svg class="w-10 h-10 -mt-1"><use href="#saboro"/></svg>
+          <p>このメモが、あとであなたの<b class="text-[#F2671F]">取扱説明書</b>になるよぉ。</p>
+        </div>
+
+        <button class="btn btn-primary w-full mt-3">この本音で進む ›</button>
+        <div class="h-4"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button class="active"><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+      <div class="fab"><svg class="w-5 h-5 text-white"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">07</span>本音を教えて</div>
+</section>
+
+
+<!-- ============================================================
+  ⑧ タスク終了
+============================================================ -->
+<section id="s8" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide">
+      <div class="topbar">
+        <button class="back"><svg class="w-4 h-4"><use href="#i-back"/></svg></button>
+        <h1>タスク終了</h1>
+      </div>
+
+      <!-- celebration -->
+      <div class="px-4 relative">
+        <div class="card p-4 bg-gradient-to-b from-[#FFF6D5] to-white relative overflow-hidden">
+          <div class="absolute inset-0 pointer-events-none text-[10px]">
+            <span class="absolute left-3 top-3">✨</span>
+            <span class="absolute left-1/3 top-1.5">⭐</span>
+            <span class="absolute right-4 top-2">✨</span>
+            <span class="absolute right-2 top-10">⭐</span>
+            <span class="absolute left-2 bottom-4">✨</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-20 h-20"><use href="#saboro-zzz"/></svg>
+            <div>
+              <div class="font-extrabold text-[14px] text-[#3F2E1B]">会議資料作成</div>
+              <span class="pill pill-green mt-1">完了!</span>
+            </div>
+          </div>
+
+          <div class="mt-3 grid grid-cols-3 gap-2 text-center">
+            <div>
+              <div class="text-[10px] text-[#7A5E32] font-bold">締切消費率</div>
+              <div class="text-2xl font-black text-[#F2671F] leading-none mt-1">89%</div>
+            </div>
+            <div>
+              <div class="text-[10px] text-[#7A5E32] font-bold">実作業時間</div>
+              <div class="text-2xl font-black text-[#3F2E1B] leading-none mt-1">1<span class="text-sm">h</span>50<span class="text-sm">m</span></div>
+            </div>
+            <div>
+              <div class="text-[10px] text-[#7A5E32] font-bold">完了時刻</div>
+              <div class="text-2xl font-black text-[#3F2E1B] leading-none mt-1">17:12</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="mt-4 mb-2 text-[13px] font-black text-center">どう終えた?</h2>
+
+        <div class="grid grid-cols-3 gap-2">
+          <button class="card p-2.5 text-center ring-2 ring-[#F2671F]">
+            <svg class="w-12 h-12 mx-auto"><use href="#saboro"/></svg>
+            <div class="text-[12px] font-black text-[#3F2E1B] mt-1">サボり切った</div>
+            <div class="text-[10px] text-[#7A5E32] mt-0.5">最高のサボりだった</div>
+          </button>
+          <button class="card p-2.5 text-center">
+            <svg class="w-12 h-12 mx-auto"><use href="#saboro"/></svg>
+            <div class="text-[12px] font-black text-[#3F2E1B] mt-1">ギリ生還</div>
+            <div class="text-[10px] text-[#7A5E32] mt-0.5">ギリギリで間に合った</div>
+          </button>
+          <button class="card p-2.5 text-center">
+            <svg class="w-12 h-12 mx-auto"><use href="#saboro-zzz"/></svg>
+            <div class="text-[12px] font-black text-[#3F2E1B] mt-1">まだ寝かせる</div>
+            <div class="text-[10px] text-[#7A5E32] mt-0.5">もう少し寝かせる</div>
+          </button>
+        </div>
+
+        <div class="bubble mt-3 flex items-start gap-2">
+          <svg class="w-10 h-10 -mt-1"><use href="#saboro"/></svg>
+          <p>終了報告をすると、AIがジャッジするよぉ。</p>
+        </div>
+
+        <button class="btn btn-primary w-full mt-3 flex items-center justify-center gap-1">
+          ジャッジを見る <svg class="w-4 h-4"><use href="#i-spark"/></svg>
+        </button>
+        <div class="h-4"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button class="active"><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">08</span>タスク終了</div>
+</section>
+
+
+<!-- ============================================================
+  ⑨ AIジャッジ
+============================================================ -->
+<section id="s9" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide">
+      <div class="topbar">
+        <button class="back"><svg class="w-4 h-4"><use href="#i-back"/></svg></button>
+        <h1>AIジャッジ</h1>
+        <svg class="w-12 h-12 ml-auto"><use href="#saboro"/></svg>
+      </div>
+
+      <div class="px-4">
+        <div class="card p-3 text-center bg-gradient-to-b from-[#FFF6D5] to-white relative overflow-hidden">
+          <div class="absolute -left-2 top-2 text-[10px]">✨</div>
+          <div class="absolute -right-2 top-4 text-[10px]">✨</div>
+          <div class="text-[11px] font-bold text-[#A8741A]">今回のジャッジ結果</div>
+          <h2 class="text-3xl font-black mt-1 leading-tight" style="font-family:'Zen Maru Gothic'; color:#F2671F">ギリギリ職人</h2>
+          <div class="mt-2 inline-flex items-center gap-1 bg-[#FFE7AE] rounded-full px-3 py-1 text-[11px] font-bold text-[#A8741A]">
+            🏆 獲得
+          </div>
+          <div class="mt-2 flex items-center justify-center gap-3">
+            <div class="text-5xl font-black text-[#3F2E1B] leading-none">68<span class="text-base">pt</span></div>
+            <svg class="w-16 h-16"><use href="#saboro"/></svg>
+          </div>
+          <div class="mt-2 text-[11px] text-[#7A5E32] font-bold">
+            タスクスコア <b>76</b> × 締切消費 <b>89%</b> = <b>67.6</b> ≈ <b>68pt</b>
+          </div>
+        </div>
+
+        <h2 class="mt-4 mb-2 text-[13px] font-black">📈 締切までの進み具合</h2>
+        <div class="card p-3">
+          <div class="text-[10px] text-[#7A5E32] font-bold flex justify-between mb-1.5">
+            <span>開始 · 4/26 12:00</span>
+            <span class="text-[#F2671F]">期限内に完了 ⚑</span>
+            <span>締切 · 4/28 18:00</span>
+          </div>
+          <div class="relative h-2.5 rounded-full bg-[#FFE7AE]">
+            <div class="absolute inset-y-0 left-0 rounded-full bg-[#F2671F]" style="width:89%"></div>
+            <div class="absolute -top-1 left-[89%] w-3.5 h-3.5 rounded-full bg-white border-2 border-[#F2671F]"></div>
+          </div>
+          <div class="text-[10px] text-[#7A5E32] font-bold flex justify-between mt-1">
+            <span></span><span class="text-[#F2671F]">完了 · 4/28 17:12</span><span></span>
+          </div>
+        </div>
+
+        <div class="bubble mt-3 flex items-start gap-2">
+          <svg class="w-12 h-12 -mt-1"><use href="#saboro"/></svg>
+          <p>見事だよぉ。<br/>危なかったけど、美しく間に合ったね。</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+          <div class="card p-2.5"><div class="text-[10px] font-bold text-[#7A5E32]">期限内</div><div class="font-black text-[#1F8A52]">○</div></div>
+          <div class="card p-2.5"><div class="text-[10px] font-bold text-[#7A5E32]">心理重荷</div><div class="font-black text-[#F2671F]">高</div></div>
+          <div class="card p-2.5"><div class="text-[10px] font-bold text-[#7A5E32]">先延ばし時間</div><div class="font-black text-[#3F2E1B]">◎</div></div>
+        </div>
+
+        <h2 class="mt-4 mb-2 text-[13px] font-black">📌 次のおすすめ</h2>
+        <div class="card p-3 flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-[#D7F1E1] flex items-center justify-center text-[#1F8A52]"><svg class="w-5 h-5"><use href="#i-paper"/></svg></div>
+          <div class="flex-1">
+            <div class="font-extrabold text-[12.5px]">企画メモ整理</div>
+            <div class="text-[10px] text-[#7A5E32] font-bold">寝かせ中 · 残り 2日</div>
+          </div>
+          <button class="text-[11px] font-bold text-[#F2671F]">このタスクに進む ›</button>
+        </div>
+
+        <button class="btn btn-primary w-full mt-3 flex items-center justify-center gap-1">
+          📊 週間スコアを見る
+        </button>
+        <div class="h-4"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="active"><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+      <div class="fab"><svg class="w-5 h-5 text-white"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">09</span>AIジャッジ</div>
+</section>
+
+
+<!-- ============================================================
+  ⑩ ランキング
+============================================================ -->
+<section id="s10" class="flex flex-col items-center">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+
+    <div class="screen scroll-hide">
+      <div class="topbar">
+        <h1>ランキング<span class="text-[#A8741A] text-xs align-top">z<sup>z</sup><sup>z</sup></span></h1>
+        <svg class="w-14 h-14 ml-auto"><use href="#saboro"/></svg>
+      </div>
+
+      <div class="px-4">
+        <div class="tabs" id="rank-tabs">
+          <button class="on" data-rk="0">今週のサボリスト</button>
+          <button data-rk="1">ギリギリ生還賞</button>
+          <button data-rk="2">重タスク放置賞</button>
+        </div>
+
+        <!-- self card -->
+        <div class="card mt-3 p-3 bg-[#FFF6D5] flex items-center gap-3 ring-2 ring-[#FFE7AE]">
+          <div>
+            <div class="text-[10px] text-[#A8741A] font-bold">今週のサボリスコア</div>
+            <div class="text-3xl font-black text-[#3F2E1B] leading-none mt-1">482</div>
+            <div class="text-[10px] text-[#7A5E32] font-bold mt-1">先週 +36 ⬈</div>
+          </div>
+          <svg class="w-16 h-16 ml-auto"><use href="#saboro"/></svg>
+        </div>
+
+        <div class="bubble mt-3 flex items-start gap-2">
+          <svg class="w-10 h-10 -mt-1"><use href="#saboro"/></svg>
+          <p>2位、お見事。<br/>あとひと粘りで首位もありえるよぉ。</p>
+        </div>
+
+        <div class="mt-3 space-y-2">
+          <!-- rank row -->
+          <div class="card p-2.5 flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-full bg-[#FFE7AE] text-[#A8741A] flex items-center justify-center text-[12px] font-black"><svg class="w-4 h-4"><use href="#i-crown"/></svg></div>
+            <svg class="w-10 h-10"><use href="#penguin"/></svg>
+            <div class="flex-1">
+              <div class="font-extrabold text-[13px]">ねむお</div>
+              <div class="text-[10px] text-[#7A5E32] font-bold">サボリスコア</div>
+            </div>
+            <div class="text-right">
+              <div class="text-lg font-black text-[#F2671F] leading-none">612</div>
+              <div class="text-[10px]">💎</div>
+            </div>
+          </div>
+
+          <div class="card p-2.5 flex items-center gap-2.5 ring-2 ring-[#F2671F]">
+            <div class="w-7 h-7 rounded-full bg-[#FFE7AE] text-[#A8741A] flex items-center justify-center text-[12px] font-black"><svg class="w-4 h-4"><use href="#i-crown"/></svg></div>
+            <svg class="w-10 h-10"><use href="#saboro"/></svg>
+            <div class="flex-1">
+              <div class="font-extrabold text-[13px]">あなた</div>
+              <div class="text-[10px] text-[#7A5E32] font-bold">サボリスコア</div>
+            </div>
+            <div class="text-right">
+              <div class="text-lg font-black text-[#F2671F] leading-none">482</div>
+              <div class="text-[10px]">💎</div>
+            </div>
+          </div>
+
+          <div class="card p-2.5 flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-full bg-[#FFE7AE] text-[#A8741A] flex items-center justify-center text-[12px] font-black"><svg class="w-4 h-4"><use href="#i-crown"/></svg></div>
+            <svg class="w-10 h-10"><use href="#bird"/></svg>
+            <div class="flex-1">
+              <div class="font-extrabold text-[13px]">ぐっち5丸</div>
+              <div class="text-[10px] text-[#7A5E32] font-bold">サボリスコア</div>
+            </div>
+            <div class="text-right">
+              <div class="text-lg font-black text-[#F2671F] leading-none">398</div>
+            </div>
+          </div>
+
+          <div class="card p-2.5 flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-full bg-[#F4E4B5] text-[#7A5E32] flex items-center justify-center text-[12px] font-black">4</div>
+            <svg class="w-10 h-10"><use href="#orange"/></svg>
+            <div class="flex-1">
+              <div class="font-extrabold text-[13px]">みかん</div>
+              <div class="text-[10px] text-[#7A5E32] font-bold">サボリスコア</div>
+            </div>
+            <div class="text-right"><div class="text-lg font-black text-[#3F2E1B] leading-none">355</div></div>
+          </div>
+
+          <div class="card p-2.5 flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-full bg-[#F4E4B5] text-[#7A5E32] flex items-center justify-center text-[12px] font-black">5</div>
+            <svg class="w-10 h-10"><use href="#sheep"/></svg>
+            <div class="flex-1">
+              <div class="font-extrabold text-[13px]">たける</div>
+              <div class="text-[10px] text-[#7A5E32] font-bold">サボリスコア</div>
+            </div>
+            <div class="text-right"><div class="text-lg font-black text-[#3F2E1B] leading-none">320</div></div>
+          </div>
+        </div>
+
+        <p class="text-center text-[10px] text-[#9C8362] mt-4">ランキングは毎週月曜 0:00 にリセットされるよ。</p>
+        <div class="h-4"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+      <button><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+      <button class="active"><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+      <button><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+      <div class="fab"><svg class="w-5 h-5 text-white"><use href="#i-plus"/></svg></div>
+    </div>
+  </div>
+  <div class="phone-label"><span class="num">10</span>ランキング</div>
+</section>
+
+</div>
+
+<!-- footer -->
+<footer class="text-center mt-16 mb-8 text-[#7A5E32] text-xs font-bold">
+  © サボロー — UI Mockup ・ ギリギリまで寝かせて、最後に間に合わせる人こそ偉い。
+</footer>
+</main>
+
+<script>
+  // Tab pill on ranking screen
+  document.querySelectorAll('#rank-tabs button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('#rank-tabs button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+    });
+  });
+
+  // Smooth jump from header chips
+  document.querySelectorAll('a[href^="#s"]').forEach(a=>{
+    a.addEventListener('click', e=>{
+      const id = a.getAttribute('href');
+      const el = document.querySelector(id);
+      if(!el) return;
+      e.preventDefault();
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  // Make bottom nav buttons hop to relevant phones (loose mapping)
+  const phoneSections = ['#s1','#s2','#s10'];
+  document.querySelectorAll('.phone .nav button').forEach((btn)=>{
+    btn.addEventListener('click', ()=>{
+      const label = btn.textContent.trim();
+      const target = label==='ホーム' ? '#s1' : label==='タスク' ? '#s2' : label==='ランキング' ? '#s10' : null;
+      if(target) document.querySelector(target).scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+</script>
+</body>
+</html>

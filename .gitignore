@@ -1,0 +1,9 @@
+node_modules/
+tests/.artifacts/
+tests/.report/
+playwright-report/
+.DS_Store
+.gstack/
+dist/
+.wrangler/
+*.log

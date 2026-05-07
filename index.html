@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>サボロー</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="app.css" />
+</head>
+<body class="min-h-screen flex flex-col items-center">
+
+<!-- shared SVG defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="saboro" viewBox="0 0 120 110">
+      <ellipse cx="60" cy="100" rx="38" ry="5" fill="#000" opacity=".08"/>
+      <path d="M60 14 C92 14 102 42 100 64 C98 88 82 100 60 100 C38 100 22 88 20 64 C18 42 28 14 60 14 Z" fill="#FFD86E"/>
+      <path d="M60 14 C82 14 96 32 98 56 C99 70 92 84 80 91 C72 84 80 60 70 48 C62 39 50 38 42 44 C36 32 44 14 60 14 Z" fill="#FFE6A0" opacity=".7"/>
+      <ellipse cx="38" cy="62" rx="6" ry="3.5" fill="#F7B5A6"/>
+      <ellipse cx="82" cy="62" rx="6" ry="3.5" fill="#F7B5A6"/>
+      <path d="M40 52 q5 -4 10 0" stroke="#3F2E1B" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M70 52 q5 -4 10 0" stroke="#3F2E1B" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M55 70 q5 4 10 0" stroke="#3F2E1B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M58 14 q2 -8 6 -8 q2 4 -2 8" fill="#F2C24A"/>
+      <path d="M58 64 l4 4 l-4 2 z" fill="#F2A04A"/>
+    </symbol>
+    <symbol id="saboro-zzz" viewBox="0 0 140 110">
+      <use href="#saboro" x="10" y="0"/>
+      <text x="110" y="22" font-family="M PLUS Rounded 1c" font-weight="900" fill="#A8741A" font-size="14">z</text>
+      <text x="118" y="14" font-family="M PLUS Rounded 1c" font-weight="900" fill="#A8741A" font-size="11">z</text>
+      <text x="124" y="8"  font-family="M PLUS Rounded 1c" font-weight="900" fill="#A8741A" font-size="9">z</text>
+    </symbol>
+    <symbol id="penguin" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <path d="M40 12 c18 0 26 14 26 32 c0 16 -10 26 -26 26 c-16 0 -26 -10 -26 -26 c0 -18 8 -32 26 -32 z" fill="#5A6470"/>
+      <path d="M40 26 c10 0 16 8 16 18 c0 12 -6 20 -16 20 c-10 0 -16 -8 -16 -20 c0 -10 6 -18 16 -18z" fill="#FFFBF1"/>
+      <circle cx="33" cy="38" r="2.4" fill="#3F2E1B"/>
+      <circle cx="47" cy="38" r="2.4" fill="#3F2E1B"/>
+      <path d="M37 46 l3 4 l3 -4 z" fill="#F2A04A"/>
+    </symbol>
+    <symbol id="bird" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <path d="M40 12 c18 0 26 14 26 30 c0 16 -10 28 -26 28 c-16 0 -26 -12 -26 -28 c0 -16 8 -30 26 -30z" fill="#7BAEEB"/>
+      <ellipse cx="40" cy="46" rx="14" ry="12" fill="#D9EAFB"/>
+      <circle cx="34" cy="40" r="2.2" fill="#3F2E1B"/>
+      <circle cx="46" cy="40" r="2.2" fill="#3F2E1B"/>
+      <path d="M37 50 l3 4 l3 -4 z" fill="#F2A04A"/>
+    </symbol>
+    <symbol id="orange" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <circle cx="40" cy="44" r="28" fill="#FFA94D"/>
+      <circle cx="40" cy="44" r="22" fill="#FFB871"/>
+      <circle cx="34" cy="40" r="2.2" fill="#3F2E1B"/>
+      <circle cx="46" cy="40" r="2.2" fill="#3F2E1B"/>
+      <path d="M37 48 q3 3 6 0" stroke="#3F2E1B" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M40 14 q-4 -8 4 -10 q6 4 0 10z" fill="#5BB16E"/>
+    </symbol>
+    <symbol id="sheep" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <circle cx="26" cy="34" r="9" fill="#FFFBF1"/>
+      <circle cx="38" cy="22" r="9" fill="#FFFBF1"/>
+      <circle cx="52" cy="26" r="9" fill="#FFFBF1"/>
+      <circle cx="60" cy="40" r="9" fill="#FFFBF1"/>
+      <circle cx="22" cy="48" r="9" fill="#FFFBF1"/>
+      <circle cx="58" cy="56" r="9" fill="#FFFBF1"/>
+      <circle cx="40" cy="46" r="20" fill="#FFFBF1"/>
+      <ellipse cx="40" cy="46" rx="14" ry="12" fill="#F4E4B5"/>
+      <circle cx="34" cy="42" r="2" fill="#3F2E1B"/>
+      <circle cx="46" cy="42" r="2" fill="#3F2E1B"/>
+      <path d="M37 50 q3 2 6 0" stroke="#3F2E1B" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="hamu" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="74" rx="22" ry="3" fill="#000" opacity=".08"/>
+      <path d="M40 14 c18 0 28 14 28 30 c0 14 -10 26 -28 26 c-18 0 -28 -12 -28 -26 c0 -16 10 -30 28 -30z" fill="#F2B07A"/>
+      <ellipse cx="30" cy="44" rx="5" ry="3" fill="#FFD3B5"/>
+      <ellipse cx="50" cy="44" rx="5" ry="3" fill="#FFD3B5"/>
+      <circle cx="32" cy="38" r="2.2" fill="#3F2E1B"/>
+      <circle cx="48" cy="38" r="2.2" fill="#3F2E1B"/>
+      <path d="M37 48 q3 3 6 0" stroke="#3F2E1B" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="currentColor"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="3.4" rx="1.2" fill="currentColor"/><rect x="4" y="10.3" width="16" height="3.4" rx="1.2" fill="currentColor"/><rect x="4" y="15.6" width="16" height="3.4" rx="1.2" fill="currentColor"/></symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 18h18l-1 3H4zM3 7l5 4 4-6 4 6 5-4-2 9H5z" fill="currentColor"/></symbol>
+    <symbol id="i-user"  viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z" fill="currentColor"/></symbol>
+    <symbol id="i-back"  viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4 4 10-10" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-warn"  viewBox="0 0 24 24"><path d="M12 3l11 19H1z" fill="#F4B73A"/><rect x="11" y="10" width="2" height="6" fill="#3F2E1B"/><rect x="11" y="17" width="2" height="2" fill="#3F2E1B"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="i-doc"   viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="currentColor"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#fff" stroke-width="1.6"/></symbol>
+    <symbol id="i-mail"  viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2" fill="currentColor"/><path d="M3 7l9 7 9-7" stroke="#fff" stroke-width="2" fill="none"/></symbol>
+    <symbol id="i-paper" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="currentColor"/></symbol>
+    <symbol id="i-plus"  viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-bolt"  viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="currentColor"/></symbol>
+    <symbol id="i-zzz"   viewBox="0 0 24 24"><path d="M5 5h8L6 17h8v2H4v-2l7-12H5z M14 11h6l-5 7h5v2h-7v-2l5-7h-4z" fill="currentColor"/></symbol>
+    <symbol id="i-send"  viewBox="0 0 24 24"><path d="M3 11l18-8-7 18-3-7z" fill="currentColor"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 4h12v3a4 4 0 1 1-8 0V4zm-3 0h3v4a3 3 0 0 1-3-3zm15 0h3v1a3 3 0 0 1-3 3zM10 12h4v4h2v3H8v-3h2z" fill="currentColor"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2l1.7 5.3L19 9l-5.3 1.7L12 16l-1.7-5.3L5 9l5.3-1.7z" fill="currentColor"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM9 4h6l1 2H8z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<header class="w-full max-w-[420px] px-4 mt-6 mb-4 text-center">
+  <a href="mockup.html" class="text-[11px] font-bold text-[#A8741A] underline opacity-70 hover:opacity-100">← UIモックアップ集を見る</a>
+</header>
+
+<!-- single phone frame -->
+<div class="phone" id="phone">
+  <div class="notch"></div>
+  <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;◗</span></div>
+  <main class="screen scroll-hide" id="screen" data-testid="screen"></main>
+  <nav class="nav" id="nav">
+    <button data-route="#/home" data-testid="nav-home"><svg class="w-5 h-5"><use href="#i-home"/></svg>ホーム</button>
+    <button data-route="#/tasks" data-testid="nav-tasks"><svg class="w-5 h-5"><use href="#i-list"/></svg>タスク</button>
+    <button data-route="#/ranking" data-testid="nav-ranking"><svg class="w-5 h-5"><use href="#i-crown"/></svg>ランキング</button>
+    <button data-route="#/me" data-testid="nav-me"><svg class="w-5 h-5"><use href="#i-user"/></svg>マイページ</button>
+    <button class="fab" data-route="#/task/add" data-testid="nav-fab" aria-label="タスクを追加">
+      <svg class="w-5 h-5 text-white"><use href="#i-plus"/></svg>
+    </button>
+  </nav>
+</div>
+
+<!-- toast -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<footer class="text-center mt-6 mb-8 text-[#7A5E32] text-[11px] font-bold opacity-70">
+  サボロー — ギリギリまで寝かせて、最後に間に合わせる人こそ偉い。
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

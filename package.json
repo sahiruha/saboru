@@ -1,0 +1,19 @@
+{
+  "name": "saboro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "サボロー — タスクを早く終わらせる時代に、あえて先延ばし力を競うアプリ",
+  "scripts": {
+    "start": "python3 -m http.server 4789",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:remote": "E2E_BASE_URL=https://saboro.pages.dev playwright test",
+    "test:report": "playwright show-report tests/.report",
+    "build": "rm -rf dist && mkdir dist && cp index.html mockup.html app.css app.js dist/ && printf '/*\\n  Cache-Control: public, max-age=300\\n' > dist/_headers",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=saboro --commit-dirty=true --branch=main"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}
