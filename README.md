@@ -6,22 +6,37 @@
 - 🔗 本番: <https://saboro.pages.dev>
 - 📐 デザインモックアップ集: <https://saboro.pages.dev/mockup.html>
 - 📦 コード: 単一HTML/CSS/JS、ビルド不要。永続化は `localStorage` のみ。
-- ✅ E2E: Playwright (Chromium) で **38 件**、ローカル & 本番ともに pass。
+- 🧪 E2E: Playwright (Chromium) ・ ローカル & 本番ともに通る構成。
+- 🎯 スコープ: **MVP**。`kikaku.md` 9章の 7 機能のみ実装。
+
+## MVP 範囲
+
+| # | MVP 機能 | 画面 |
+| - | -------- | ---- |
+| 1 | タスク入力                | タスク追加(入力 + 4項目を1画面で編集) |
+| 2 | AIによるタスク定量化      | 定量化(レーダー / 5軸スコア / AIの理由) |
+| 3 | 先延ばしアドバイス生成    | 先延ばし提案(おすすめ時間 + 寝かせる/今やる) |
+| 4 | タスク終了ボタン          | タスク終了(3モードの選択) |
+| 5 | AIジャッジ                | AIジャッジ(バッジ / 獲得pt) |
+| 6 | サボりスコア算出          | ホームの今週スコア |
+| 7 | ランキング表示            | ランキング |
+
+非 MVP(モックアップ集 `mockup.html` で温存): 不足情報チャット / 承認画面 / 本音(取扱説明書)。
 
 ## 構成
 
 ```
 .
-├── index.html          # SPA 本体
-├── app.js              # ルーター / Store / Mock AI / 全画面ビュー
-├── app.css             # 端末フレームと共通トークン
-├── mockup.html         # 10画面モックアップ集 (リファレンス)
+├── index.html              # SPA 本体
+├── app.js                  # ルーター / Store / Mock AI / MVP の全画面
+├── app.css                 # 端末フレームと共通トークン
+├── mockup.html             # 10画面モックアップ集 (リファレンス、デプロイ対象)
 ├── concept.md / kikaku.md  # 企画ドキュメント
-├── package.json        # Playwright のみ devDependency
+├── package.json            # Playwright のみ devDependency
 ├── playwright.config.ts
 └── tests/
-    ├── e2e/saboro.spec.ts   # 19 ケース
-    └── test-spec.md         # E2E テスト仕様書
+    ├── e2e/saboro.spec.ts  # 21 ケース、MVP 7機能トレーサビリティ付き
+    └── test-spec.md        # E2E テスト仕様書
 ```
 
 ## 開発
