@@ -878,29 +878,50 @@ Router.on('ranking', () => {
   const rank = Store.ranking();
   const me = rank.find(r => r.isMe);
   const myIdx = rank.indexOf(me);
+  const sleepers = Store.data.tasks.filter(t => t.status === 'sleeping').length;
+  const activeTasks = Store.data.tasks.filter(t => t.status !== 'done' && t.id !== '_draft').length;
+  const roomSpots = [
+    { x: 18, bottom: 80, scale: .82, z: 4, accent: '#B9DCF7', tilt: '-2deg', line: 'まだ寝かす' },
+    { x: 43, bottom: 94, scale: .94, z: 7, accent: '#FFE3B8', tilt: '1deg', line: 'あと少し' },
+    { x: 66, bottom: 78, scale: .84, z: 5, accent: '#B9E5CA', tilt: '-1deg', line: '熟成中' },
+    { x: 30, bottom: 38, scale: 1.08, z: 10, accent: '#FFD86E', tilt: '2deg', line: '締切の香り' },
+    { x: 58, bottom: 34, scale: 1.02, z: 11, accent: '#FF92AC', tilt: '-2deg', line: '今じゃない' },
+    { x: 80, bottom: 42, scale: .98, z: 9, accent: '#FFB184', tilt: '1deg', line: 'たぶん平気' }
+  ];
+  const roomPeople = rank.slice(0, 6).map((r, i) => ({ ...r, spot: roomSpots[i] }));
+
   return `
     <div class="topbar">
-      <h1>ランキング<span class="text-[#A8741A] text-xs align-top">z<sup>z</sup><sup>z</sup></span></h1>
+      <h1>先延ばしロビー<span class="text-[#A8741A] text-xs align-top">z<sup>z</sup><sup>z</sup></span></h1>
       <svg class="w-14 h-14 ml-auto"><use href="#saboro"/></svg>
     </div>
     <div class="px-4">
-      <div class="card mt-1 p-3 bg-[#FFF6D5] flex items-center gap-3 ring-2 ring-[#FFE7AE]">
-        <div>
-          <div class="text-[10px] text-[#A8741A] font-bold">今週のサボリスコア</div>
-          <div class="text-3xl font-black leading-none mt-1" data-testid="my-score">${me.score|0}</div>
-          <div class="text-[10px] text-[#7A5E32] font-bold mt-1">あなたの順位 ${myIdx+1}位</div>
+      <div class="saboro-room mt-1" data-testid="ranking-room">
+        <div class="room-window"></div>
+        <div class="room-sign">みんなで<br>先延ばし中</div>
+        <div class="room-clock"></div>
+        <div class="task-stack" aria-hidden="true"><span></span><span></span><span></span></div>
+        ${roomPeople.map((r, i) => `
+          <div class="room-avatar ${r.isMe ? 'me' : ''}"
+            style="--x:${r.spot.x}%;--bottom:${r.spot.bottom}px;--scale:${r.spot.scale};--z:${r.spot.z};--accent:${r.spot.accent};--delay:${(-i * .45).toFixed(2)}s;--tilt:${r.spot.tilt};">
+            <div class="room-bubble">${r.isMe ? (sleepers ? `${sleepers}件寝かせ中` : '様子見中') : r.spot.line}</div>
+            <svg><use href="#${esc(r.sprite)}"/></svg>
+            <span class="room-rank-badge">${i + 1}</span>
+          </div>`).join('')}
+        <div class="room-floor-label">
+          <span>あなた <b data-testid="my-score">${me.score|0}</b>pt</span>
+          <span>${activeTasks}件が床に溜まり中</span>
         </div>
-        <svg class="w-16 h-16 ml-auto"><use href="#saboro"/></svg>
       </div>
 
       <div class="bubble mt-3 flex items-start gap-2">
         <svg class="w-10 h-10 -mt-1"><use href="#saboro"/></svg>
-        <p>${myIdx === 0 ? '首位、見事だよぉ。' : `${myIdx+1}位、お見事。<br/>あとひと粘りで上もありえるよぉ。`}</p>
+        <p>${myIdx === 0 ? 'いちばん上手に寝かせてるよぉ。' : `${myIdx+1}位。<br/>この部屋の空気、まだまだ熟成できそうだよぉ。`}</p>
       </div>
 
       <div class="mt-3 space-y-2" data-testid="rank-list">
         ${rank.map((r,i) => `
-          <div class="card p-2.5 flex items-center gap-2.5 ${r.isMe?'ring-2 ring-[#F2671F]':''}" data-testid="rank-row">
+          <div class="card rank-row-room p-2.5 flex items-center gap-2.5 ${r.isMe?'ring-2 ring-[#F2671F]':''}" data-testid="rank-row">
             <div class="w-7 h-7 rounded-full ${i<3?'bg-[#FFE7AE] text-[#A8741A]':'bg-[#F4E4B5] text-[#7A5E32]'} flex items-center justify-center text-[12px] font-black">
               ${i<3 ? '<svg class="w-4 h-4"><use href="#i-crown"/></svg>' : (i+1)}
             </div>
